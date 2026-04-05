@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\NewLeadInquiryMail;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -41,7 +42,15 @@ class ContactSubmissionTest extends TestCase
             'activity_type' => 'created',
         ]);
 
-        Mail::assertSent(NewLeadInquiryMail::class);
+        Mail::assertSent(NewLeadInquiryMail::class, function (NewLeadInquiryMail $mail): bool {
+            $replyTo = $mail->envelope()->replyTo;
+
+            if (! isset($replyTo[0]) || ! $replyTo[0] instanceof Address) {
+                return false;
+            }
+
+            return $replyTo[0]->address === 'alex@example.com';
+        });
     }
 
     public function test_honeypot_blocks_bot_submission(): void
