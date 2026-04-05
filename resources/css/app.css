@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Sora', ui-sans-serif, system-ui, sans-serif;
+
+    --color-brand-bg: #060814;
+    --color-brand-text: #f4f7ff;
+    --color-brand-muted: #8f98b3;
+    --color-brand-accent: #6ea8fe;
+    --color-brand-accent-soft: #1f3d7c;
+    --color-brand-border: #202a42;
+}
+
+@layer base {
+    * {
+        border-color: var(--color-brand-border);
+    }
+
+    body {
+        font-family: var(--font-sans);
+        color: var(--color-brand-text);
+        background:
+            radial-gradient(circle at 10% 15%, rgba(110, 168, 254, 0.22), transparent 35%),
+            radial-gradient(circle at 90% 20%, rgba(34, 197, 94, 0.16), transparent 30%),
+            radial-gradient(circle at 50% 100%, rgba(59, 130, 246, 0.18), transparent 40%),
+            var(--color-brand-bg);
+        min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: var(--font-display);
+        letter-spacing: -0.02em;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+}
+
+@layer components {
+    .container-main {
+        @apply w-full max-w-6xl mx-auto px-4 md:px-6;
+    }
+
+    .site-bg-blur {
+        @apply fixed inset-0 pointer-events-none;
+        background: radial-gradient(circle at 20% 20%, rgba(110, 168, 254, 0.16), transparent 35%);
+        filter: blur(90px);
+    }
+
+    .site-grid-overlay {
+        @apply fixed inset-0 pointer-events-none opacity-20;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+        background-size: 48px 48px;
+    }
+
+    .glass-nav {
+        @apply rounded-2xl border border-brand-border/80 backdrop-blur-xl bg-slate-900/45;
+    }
+
+    .glass-card {
+        @apply rounded-2xl border border-brand-border/90 bg-slate-900/40 backdrop-blur-lg shadow-xl shadow-blue-900/10;
+    }
+
+    .hero-frame {
+        @apply rounded-3xl border border-brand-border bg-slate-900/45 p-7 md:p-10 overflow-hidden relative;
+    }
+
+    .hero-title {
+        @apply text-4xl md:text-6xl leading-tight;
+    }
+
+    .hero-subtitle {
+        @apply text-base md:text-lg text-brand-muted max-w-2xl;
+    }
+
+    .section-title {
+        @apply text-3xl md:text-4xl;
+    }
+
+    .section-head {
+        @apply max-w-3xl;
+    }
+
+    .eyebrow {
+        @apply text-xs uppercase tracking-[0.22em] text-brand-muted;
+    }
+
+    .nav-link {
+        @apply text-brand-muted hover:text-white transition;
+    }
+
+    .nav-link-active {
+        @apply text-white;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-slate-950 bg-brand-accent hover:bg-blue-300 transition;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold border border-brand-border text-white hover:bg-slate-800/60 transition;
+    }
+
+    .metric-box {
+        @apply rounded-xl border border-brand-border bg-slate-900/55 p-4;
+    }
+
+    .metric-value {
+        @apply text-2xl font-display;
+    }
+
+    .metric-label {
+        @apply text-xs uppercase tracking-widest text-brand-muted mt-1;
+    }
+
+    .stack-item {
+        @apply rounded-lg border border-brand-border px-3 py-2 text-brand-text bg-slate-900/50;
+    }
+
+    .badge {
+        @apply text-xs rounded-full border border-brand-border px-2.5 py-1 text-brand-muted;
+    }
+
+    .card-hover {
+        @apply transition duration-300 hover:-translate-y-1 hover:border-blue-300/30;
+    }
+
+    .status-banner {
+        @apply rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200;
+    }
+
+    .form-label {
+        @apply block text-sm mb-1 text-brand-muted;
+    }
+
+    .form-input {
+        @apply w-full rounded-xl border border-brand-border bg-slate-900/40 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-300/50;
+    }
+
+    .form-error {
+        @apply text-rose-300 text-xs mt-1;
+    }
+
+    .prose-lite {
+        @apply text-brand-text/90 leading-relaxed space-y-3;
+    }
+
+    .prose-lite p {
+        @apply mb-3;
+    }
+
+    .hero-orb {
+        @apply absolute rounded-full blur-3xl;
+    }
+
+    .hero-orb-left {
+        @apply h-52 w-52 bg-blue-500/30 -left-20 -top-12;
+    }
+
+    .hero-orb-right {
+        @apply h-64 w-64 bg-emerald-500/20 -right-24 -bottom-20;
+    }
+}

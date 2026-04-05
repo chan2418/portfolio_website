@@ -1,0 +1,122 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Enums\PublishStatus;
+use App\Filament\Resources\ProjectResource\Pages;
+use App\Models\Project;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
+
+class ProjectResource extends Resource
+{
+    protected static ?string $model = Project::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-folder';
+
+    protected static ?string $navigationGroup = 'Content';
+
+    protected static ?int $navigationSort = 20;
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                TextInput::make('title')
+                    ->required()
+                    ->maxLength(255)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('slug', Str::slug((string) $state))),
+                TextInput::make('slug')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(255),
+                TextInput::make('client_name')->maxLength(255),
+                TextInput::make('industry')->maxLength(255),
+                Textarea::make('summary')
+                    ->required()
+                    ->rows(3),
+                RichEditor::make('challenge')->columnSpanFull(),
+                RichEditor::make('solution')->columnSpanFull(),
+                RichEditor::make('results')->columnSpanFull(),
+                TagsInput::make('tech_stack')
+                    ->splitKeys([','])
+                    ->placeholder('Laravel, MySQL, TailwindCSS'),
+                KeyValue::make('metrics')
+                    ->keyLabel('Metric')
+                    ->valueLabel('Value')
+                    ->addButtonLabel('Add metric'),
+                TextInput::make('cover_image')
+                    ->url()
+                    ->maxLength(2048),
+                TextInput::make('project_url')
+                    ->url()
+                    ->maxLength(2048),
+                Select::make('status')
+                    ->options(PublishStatus::options())
+                    ->required()
+                    ->default(PublishStatus::Draft->value),
+                DateTimePicker::make('published_at'),
+                Toggle::make('is_featured'),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('title')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('client_name')
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('status')
+                    ->badge(),
+                IconColumn::make('is_featured')
+                    ->boolean(),
+                TextColumn::make('published_at')
+                    ->dateTime()
+                    ->sortable(),
+                TextColumn::make('updated_at')
+                    ->since()
+                    ->sortable(),
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->options(PublishStatus::options()),
+            ])
+            ->defaultSort('published_at', 'desc')
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ManageProjects::route('/'),
+        ];
+    }
+}
