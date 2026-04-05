@@ -91,7 +91,9 @@ Default values are in `.env.example`.
 
 ## Personalization Checklist
 
-After login, go to `/admin` and update these `Site Settings` keys:
+Fastest way: open `/admin/brand-profile` and fill your personal details in one form.
+
+Or update manually via `Site Settings` keys:
 
 - `site_name`
 - `site_tagline`
