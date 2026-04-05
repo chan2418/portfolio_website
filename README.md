@@ -107,6 +107,24 @@ Or update manually via `Site Settings` keys:
 - `social_github_url`
 - `social_x_url`
 
+## Launch Readiness
+
+Use the admin checklist page:
+
+- `/admin/launch-readiness`
+
+Or run the terminal command:
+
+```bash
+php artisan app:launch-check
+```
+
+Strict mode (fails command if any critical checks fail):
+
+```bash
+php artisan app:launch-check --strict
+```
+
 ## Sitemap + Robots
 
 Generate sitemap manually:
