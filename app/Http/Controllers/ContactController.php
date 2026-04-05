@@ -6,6 +6,7 @@ use App\Enums\LeadStage;
 use App\Enums\SeoPageType;
 use App\Events\LeadInquirySubmitted;
 use App\Http\Requests\ContactSubmissionRequest;
+use App\Mail\LeadAutoReplyMail;
 use App\Mail\NewLeadInquiryMail;
 use App\Models\LeadInquiry;
 use App\Support\CaptchaVerifier;
@@ -76,6 +77,24 @@ class ContactController extends Controller
                 Mail::to($adminEmail)->send(new NewLeadInquiryMail($lead));
             } catch (Throwable $exception) {
                 Log::warning('Lead inquiry email notification failed.', [
+                    'lead_id' => $lead->id,
+                    'message' => $exception->getMessage(),
+                ]);
+            }
+        }
+
+        if (filled($lead->email)) {
+            $siteName = (string) SiteSettings::get('site_name', config('app.name', 'Our Team'));
+            $contactEmail = SiteSettings::get('contact_email', config('mail.from.address'));
+
+            try {
+                Mail::to($lead->email)->send(new LeadAutoReplyMail(
+                    $lead,
+                    $siteName,
+                    filled($contactEmail) ? (string) $contactEmail : null
+                ));
+            } catch (Throwable $exception) {
+                Log::warning('Lead auto-reply email failed.', [
                     'lead_id' => $lead->id,
                     'message' => $exception->getMessage(),
                 ]);

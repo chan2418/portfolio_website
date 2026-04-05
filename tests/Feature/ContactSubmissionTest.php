@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\LeadAutoReplyMail;
 use App\Mail\NewLeadInquiryMail;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -41,6 +42,12 @@ class ContactSubmissionTest extends TestCase
 
             return $replyTo[0]->address === 'alex@example.com';
         });
+
+        Mail::assertSent(LeadAutoReplyMail::class, function (LeadAutoReplyMail $mail): bool {
+            return $mail->hasTo('alex@example.com');
+        });
+
+        Mail::assertSentCount(2);
     }
 
     public function test_honeypot_blocks_bot_submission(): void
@@ -113,6 +120,8 @@ class ContactSubmissionTest extends TestCase
         ]);
 
         Mail::assertSent(NewLeadInquiryMail::class);
+        Mail::assertSent(LeadAutoReplyMail::class);
+        Mail::assertSentCount(2);
     }
 
     /**
