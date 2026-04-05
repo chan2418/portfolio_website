@@ -4,6 +4,13 @@
 @php
     $personName = $siteSettings['brand_person_name'] ?? ($siteSettings['site_name'] ?? 'me');
     $contactEmail = $siteSettings['contact_email'] ?? null;
+    $captchaEnabled = (bool) config('services.captcha.enabled', false);
+    $captchaProvider = (string) config('services.captcha.provider', 'hcaptcha');
+    $hcaptchaSiteKey = (string) config('services.captcha.hcaptcha.site_key', '');
+    $recaptchaSiteKey = (string) config('services.captcha.recaptcha.site_key', '');
+    $captchaConfigured = $captchaEnabled
+        && (($captchaProvider === 'hcaptcha' && filled($hcaptchaSiteKey))
+            || ($captchaProvider === 'recaptcha' && filled($recaptchaSiteKey)));
 @endphp
 
 <section class="container-main">
@@ -67,20 +74,50 @@
             <input type="hidden" name="captcha_token" id="captcha_token" value="{{ old('captcha_token') }}">
             @error('captcha_token') <p class="form-error md:col-span-2">{{ $message }}</p> @enderror
 
-            @if(config('services.captcha.enabled') && config('services.captcha.provider') === 'hcaptcha' && config('services.captcha.hcaptcha.site_key'))
+            @if($captchaEnabled && ! $captchaConfigured)
+                <p class="form-error md:col-span-2">Captcha is enabled but not configured. Please contact us directly using the email above.</p>
+            @endif
+
+            @if($captchaEnabled && $captchaProvider === 'hcaptcha' && $captchaConfigured)
                 <div class="md:col-span-2">
-                    <div class="h-captcha" data-sitekey="{{ config('services.captcha.hcaptcha.site_key') }}" data-callback="setCaptchaToken"></div>
+                    <div
+                        class="h-captcha"
+                        data-sitekey="{{ $hcaptchaSiteKey }}"
+                        data-callback="setCaptchaToken"
+                        data-expired-callback="clearCaptchaToken"
+                        data-error-callback="clearCaptchaToken"
+                    ></div>
                 </div>
                 <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+            @endif
+
+            @if($captchaEnabled && $captchaProvider === 'recaptcha' && $captchaConfigured)
+                <div class="md:col-span-2">
+                    <div
+                        class="g-recaptcha"
+                        data-sitekey="{{ $recaptchaSiteKey }}"
+                        data-callback="setCaptchaToken"
+                        data-expired-callback="clearCaptchaToken"
+                        data-error-callback="clearCaptchaToken"
+                    ></div>
+                </div>
+                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            @endif
+
+            @if($captchaEnabled && $captchaConfigured)
                 <script>
                     function setCaptchaToken(token) {
                         document.getElementById('captcha_token').value = token;
+                    }
+
+                    function clearCaptchaToken() {
+                        document.getElementById('captcha_token').value = '';
                     }
                 </script>
             @endif
 
             <div class="md:col-span-2 mt-2">
-                <button type="submit" class="btn-primary w-full md:w-auto">Submit Inquiry</button>
+                <button type="submit" class="btn-primary w-full md:w-auto" @disabled($captchaEnabled && ! $captchaConfigured)>Submit Inquiry</button>
             </div>
         </form>
     </div>
