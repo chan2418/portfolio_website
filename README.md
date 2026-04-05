@@ -52,6 +52,37 @@ Set these in `.env` for production.
 
 Filament requires the PHP extension `ext-intl` in production/local runtime environments.
 
+## Captcha Setup
+
+Contact form supports both providers:
+
+- `hcaptcha`
+- `recaptcha`
+
+Set these values in `.env`:
+
+```bash
+CAPTCHA_ENABLED=true
+CAPTCHA_PROVIDER=hcaptcha
+HCAPTCHA_SITE_KEY=your_hcaptcha_site_key
+HCAPTCHA_SECRET_KEY=your_hcaptcha_secret_key
+```
+
+For reCAPTCHA instead:
+
+```bash
+CAPTCHA_ENABLED=true
+CAPTCHA_PROVIDER=recaptcha
+RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key
+```
+
+Then clear config cache:
+
+```bash
+php artisan config:clear
+```
+
 ## Quick Start
 
 1. Install dependencies:
