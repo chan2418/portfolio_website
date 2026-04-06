@@ -30,9 +30,6 @@ class Service extends Model
     {
         return $query
             ->where('is_active', true)
-            ->where(function (Builder $builder): void {
-                $builder->whereNull('published_at')->orWhere('published_at', '<=', now());
-            })
             ->orderBy('order_column');
     }
 }

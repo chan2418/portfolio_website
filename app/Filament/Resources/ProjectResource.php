@@ -71,7 +71,8 @@ class ProjectResource extends Resource
                     ->options(PublishStatus::options())
                     ->required()
                     ->default(PublishStatus::Draft->value),
-                DateTimePicker::make('published_at'),
+                DateTimePicker::make('published_at')
+                    ->helperText('Optional. Used for timeline/order display only. Visibility is controlled by Status.'),
                 Toggle::make('is_featured'),
             ]);
     }

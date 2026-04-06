@@ -36,12 +36,17 @@ class Project extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (Project $project): void {
+            if ($project->status === PublishStatus::Published->value && blank($project->published_at)) {
+                $project->published_at = now();
+            }
+        });
+    }
+
     public function scopePublished(Builder $query): Builder
     {
-        return $query
-            ->where('status', PublishStatus::Published->value)
-            ->where(function (Builder $builder): void {
-                $builder->whereNull('published_at')->orWhere('published_at', '<=', now());
-            });
+        return $query->where('status', PublishStatus::Published->value);
     }
 }
