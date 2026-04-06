@@ -64,8 +64,8 @@ class ProjectResource extends Resource
                     ->addButtonLabel('Add metric'),
                 TextInput::make('cover_image')
                     ->label('Cover Image (URL or Uploaded Path)')
-                    ->maxLength(2048)
                     ->placeholder('https://example.com/image.jpg or projects/covers/image.jpg')
+                    ->dehydrateStateUsing(fn (mixed $state): ?string => is_string($state) && filled($state) ? $state : null)
                     ->helperText('Paste an image URL or upload a file below.'),
                 FileUpload::make('cover_image_upload')
                     ->label('Upload Cover Image')
@@ -73,8 +73,13 @@ class ProjectResource extends Resource
                     ->disk('public')
                     ->directory('projects/covers')
                     ->visibility('public')
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('16:9')
+                    ->imageResizeTargetWidth('1600')
+                    ->imageResizeTargetHeight('900')
+                    ->imageResizeUpscale(false)
                     ->imageEditor()
-                    ->maxSize(4096)
+                    ->maxSize(10240)
                     ->dehydrated(false)
                     ->default(function (?Project $record): ?string {
                         $current = (string) ($record?->cover_image ?? '');
@@ -85,8 +90,18 @@ class ProjectResource extends Resource
 
                         return $current;
                     })
-                    ->afterStateUpdated(fn (Set $set, mixed $state): mixed => filled($state) ? $set('cover_image', $state) : null)
-                    ->helperText('Uploaded files are stored in /storage/projects/covers and applied automatically.'),
+                    ->afterStateUpdated(function (Set $set, mixed $state): void {
+                        if (is_array($state)) {
+                            $state = array_values($state)[0] ?? null;
+                        }
+
+                        if (! is_string($state) || blank($state)) {
+                            return;
+                        }
+
+                        $set('cover_image', $state);
+                    })
+                    ->helperText('Uploaded files are auto-resized to 1600x900 before storage to reduce image size.'),
                 TextInput::make('project_url')
                     ->url()
                     ->maxLength(2048),
