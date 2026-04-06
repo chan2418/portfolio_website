@@ -6,20 +6,46 @@ use App\Enums\SeoPageType;
 use App\Models\Project;
 use App\Support\SeoManager;
 use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CaseStudyController extends Controller
 {
-    public function index(SeoManager $seoManager): View
+    public function index(Request $request, SeoManager $seoManager): View
     {
-        $projects = Project::published()->latest('published_at')->paginate(9);
+        $projectsQuery = Project::published()->latest('published_at');
+
+        $availableTypes = Project::published()
+            ->whereNotNull('industry')
+            ->where('industry', '!=', '')
+            ->select('industry')
+            ->distinct()
+            ->orderBy('industry')
+            ->pluck('industry')
+            ->values();
+
+        $selectedTypeSlug = Str::slug((string) $request->query('type'));
+        $selectedType = null;
+
+        if ($selectedTypeSlug !== '' && $selectedTypeSlug !== 'all') {
+            $selectedType = $availableTypes->first(
+                fn (string $type): bool => Str::slug($type) === $selectedTypeSlug
+            );
+
+            if ($selectedType) {
+                $projectsQuery->where('industry', $selectedType);
+            }
+        }
+
+        $projects = $projectsQuery->paginate(9)->withQueryString();
 
         $seo = $seoManager->resolve(SeoPageType::Static->value, 'case-studies', [
             'title' => 'Case Studies',
             'description' => 'See measurable project outcomes, architecture decisions, and business impact from shipped products.',
         ]);
 
-        return view('pages.case-studies.index', compact('projects', 'seo'));
+        return view('pages.case-studies.index', compact('projects', 'seo', 'availableTypes', 'selectedType'));
     }
 
     public function show(string $slug, SeoManager $seoManager): View|Response

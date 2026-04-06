@@ -20,11 +20,11 @@ class HomeController extends Controller
         $featuredProjects = Project::published()
             ->where('is_featured', true)
             ->latest('published_at')
-            ->limit(3)
+            ->limit(9)
             ->get();
 
         if ($featuredProjects->isEmpty()) {
-            $featuredProjects = Project::published()->latest('published_at')->limit(3)->get();
+            $featuredProjects = Project::published()->latest('published_at')->limit(9)->get();
         }
 
         $testimonials = Testimonial::active()->limit(4)->get();

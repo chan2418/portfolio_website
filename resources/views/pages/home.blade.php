@@ -102,10 +102,36 @@
 </section>
 
 <section class="container-main mb-12">
+    @php
+        $projectTypes = $featuredProjects
+            ->pluck('industry')
+            ->filter(fn ($type) => filled($type))
+            ->map(fn ($type) => (string) $type)
+            ->unique()
+            ->values();
+    @endphp
+
     <div class="section-head">
         <p class="eyebrow">Projects</p>
         <h2 class="section-title">Featured work with outcomes</h2>
     </div>
+
+    @if($projectTypes->isNotEmpty())
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+            <a href="{{ route('case-studies.index') }}" class="glass-card p-4 card-hover">
+                <p class="text-xs uppercase tracking-widest text-brand-muted">All Types</p>
+                <p class="font-display text-lg mt-2">Browse everything</p>
+                <p class="text-sm text-brand-muted mt-2">{{ $featuredProjects->count() }} projects</p>
+            </a>
+            @foreach($projectTypes as $projectType)
+                <a href="{{ route('case-studies.index', ['type' => \Illuminate\Support\Str::slug($projectType)]) }}" class="glass-card p-4 card-hover">
+                    <p class="text-xs uppercase tracking-widest text-brand-muted">Type</p>
+                    <p class="font-display text-lg mt-2">{{ $projectType }}</p>
+                    <p class="text-sm text-brand-muted mt-2">{{ $featuredProjects->where('industry', $projectType)->count() }} projects</p>
+                </a>
+            @endforeach
+        </div>
+    @endif
 
     <div class="grid md:grid-cols-3 gap-5 mt-6">
         @forelse($featuredProjects as $project)
@@ -122,7 +148,7 @@
                         No Cover Image
                     </div>
                 @endif
-                <p class="text-xs text-brand-muted uppercase tracking-widest mt-4">{{ $project->industry ?: 'Digital Product' }}</p>
+                <p class="text-xs text-brand-muted uppercase tracking-widest mt-4">{{ $project->industry ?: 'General' }}</p>
                 <h3 class="font-display text-xl mt-2">{{ $project->title }}</h3>
                 <p class="text-sm text-brand-muted mt-2">{{ $project->summary }}</p>
                 <a href="{{ route('case-studies.show', $project->slug) }}" class="text-sm mt-4 inline-flex text-brand-accent">Read Story -></a>
@@ -130,6 +156,10 @@
         @empty
             <p class="text-brand-muted">Publish projects from admin to populate this section.</p>
         @endforelse
+    </div>
+
+    <div class="mt-6">
+        <a href="{{ route('case-studies.index') }}" class="btn-secondary">Explore Full Project Grid</a>
     </div>
 </section>
 

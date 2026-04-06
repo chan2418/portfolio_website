@@ -48,7 +48,11 @@ class ProjectResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
                 TextInput::make('client_name')->maxLength(255),
-                TextInput::make('industry')->maxLength(255),
+                TextInput::make('industry')
+                    ->label('Project Type')
+                    ->placeholder('Website, Tool, AI Video Editing, Automation')
+                    ->helperText('Used for project grouping/filtering on the public site.')
+                    ->maxLength(255),
                 Textarea::make('summary')
                     ->required()
                     ->rows(3),
