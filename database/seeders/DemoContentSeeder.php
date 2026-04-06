@@ -6,6 +6,7 @@ use App\Enums\PublishStatus;
 use App\Models\BlogPost;
 use App\Models\Faq;
 use App\Models\Project;
+use App\Models\ProjectType;
 use App\Models\SeoPage;
 use App\Models\Service;
 use App\Models\SiteSetting;
@@ -71,12 +72,24 @@ class DemoContentSeeder extends Seeder
             );
         }
 
+        $websiteType = ProjectType::query()->updateOrCreate(
+            ['slug' => 'website'],
+            [
+                'name' => 'Website',
+                'description' => 'Marketing and business websites with conversion-focused UX.',
+                'cover_image' => 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=1200&q=80',
+                'order_column' => 1,
+                'is_active' => true,
+            ]
+        );
+
         $project = Project::query()->updateOrCreate(
             ['slug' => 'portfolio-core-platform'],
             [
+                'project_type_id' => $websiteType->id,
                 'title' => 'Portfolio Core Platform',
                 'client_name' => 'Independent Studio',
-                'industry' => 'Professional Services',
+                'industry' => 'Website',
                 'summary' => 'Built a complete portfolio engine with CMS, CRM, and SEO workflows.',
                 'challenge' => '<p>The old portfolio was static and not generating qualified leads consistently.</p>',
                 'solution' => '<p>Implemented a Laravel 12 core with Filament admin, lead pipeline, SEO controls, and premium frontend UX.</p>',

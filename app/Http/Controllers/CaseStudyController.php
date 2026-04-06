@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SeoPageType;
 use App\Models\Project;
+use App\Models\ProjectType;
 use App\Support\SeoManager;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
@@ -14,15 +15,14 @@ class CaseStudyController extends Controller
 {
     public function index(Request $request, SeoManager $seoManager): View
     {
-        $projectsQuery = Project::published()->latest('published_at');
+        $projectsQuery = Project::published()
+            ->with('projectType')
+            ->latest('published_at');
 
-        $availableTypes = Project::published()
-            ->whereNotNull('industry')
-            ->where('industry', '!=', '')
-            ->select('industry')
-            ->distinct()
-            ->orderBy('industry')
-            ->pluck('industry')
+        $availableTypes = ProjectType::active()
+            ->withCount('publishedProjects')
+            ->get()
+            ->filter(fn (ProjectType $projectType): bool => $projectType->published_projects_count > 0)
             ->values();
 
         $selectedTypeSlug = Str::slug((string) $request->query('type'));
@@ -30,11 +30,11 @@ class CaseStudyController extends Controller
 
         if ($selectedTypeSlug !== '' && $selectedTypeSlug !== 'all') {
             $selectedType = $availableTypes->first(
-                fn (string $type): bool => Str::slug($type) === $selectedTypeSlug
+                fn (ProjectType $projectType): bool => $projectType->slug === $selectedTypeSlug
             );
 
             if ($selectedType) {
-                $projectsQuery->where('industry', $selectedType);
+                $projectsQuery->where('project_type_id', $selectedType->id);
             }
         }
 

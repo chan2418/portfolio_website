@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\PublishStatus;
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Models\Project;
+use App\Models\ProjectType;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\KeyValue;
@@ -47,11 +48,27 @@ class ProjectResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
+                Select::make('project_type_id')
+                    ->label('Project Type')
+                    ->relationship('projectType', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('slug', Str::slug((string) $state))),
+                        TextInput::make('slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ProjectType::class, 'slug'),
+                    ])
+                    ->helperText('Choose from Project Types sidebar module.'),
                 TextInput::make('client_name')->maxLength(255),
                 TextInput::make('industry')
-                    ->label('Project Type')
-                    ->placeholder('Website, Tool, AI Video Editing, Automation')
-                    ->helperText('Used for project grouping/filtering on the public site.')
+                    ->label('Legacy Industry (optional)')
+                    ->placeholder('Used only if Project Type is not set.')
                     ->maxLength(255),
                 Textarea::make('summary')
                     ->required()
@@ -125,6 +142,10 @@ class ProjectResource extends Resource
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('projectType.name')
+                    ->label('Type')
+                    ->badge()
+                    ->toggleable(),
                 TextColumn::make('client_name')
                     ->searchable()
                     ->toggleable(),
@@ -142,6 +163,9 @@ class ProjectResource extends Resource
             ->filters([
                 SelectFilter::make('status')
                     ->options(PublishStatus::options()),
+                SelectFilter::make('project_type_id')
+                    ->label('Project Type')
+                    ->relationship('projectType', 'name'),
             ])
             ->defaultSort('published_at', 'desc')
             ->actions([

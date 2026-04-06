@@ -33,7 +33,7 @@
 
                 <div class="mt-8 grid grid-cols-3 gap-4">
                     <div class="metric-box">
-                        <p class="metric-value">{{ $featuredProjects->count() }}+</p>
+                        <p class="metric-value">{{ $totalPublishedProjects }}+</p>
                         <p class="metric-label">Projects</p>
                     </div>
                     <div class="metric-box">
@@ -102,60 +102,43 @@
 </section>
 
 <section class="container-main mb-12">
-    @php
-        $projectTypes = $featuredProjects
-            ->pluck('industry')
-            ->filter(fn ($type) => filled($type))
-            ->map(fn ($type) => (string) $type)
-            ->unique()
-            ->values();
-    @endphp
-
     <div class="section-head">
         <p class="eyebrow">Projects</p>
-        <h2 class="section-title">Featured work with outcomes</h2>
+        <h2 class="section-title">Browse by project type</h2>
     </div>
 
-    @if($projectTypes->isNotEmpty())
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-            <a href="{{ route('case-studies.index') }}" class="glass-card p-4 card-hover">
-                <p class="text-xs uppercase tracking-widest text-brand-muted">All Types</p>
+    <div class="mt-6 overflow-x-auto pb-2">
+        <div class="flex gap-4 min-w-max pr-2">
+            <a href="{{ route('case-studies.index') }}" class="glass-card p-4 card-hover w-72 shrink-0">
+                <p class="text-xs uppercase tracking-widest text-brand-muted">All Projects</p>
                 <p class="font-display text-lg mt-2">Browse everything</p>
-                <p class="text-sm text-brand-muted mt-2">{{ $featuredProjects->count() }} projects</p>
+                <p class="text-sm text-brand-muted mt-2">{{ $totalPublishedProjects }} projects</p>
             </a>
-            @foreach($projectTypes as $projectType)
-                <a href="{{ route('case-studies.index', ['type' => \Illuminate\Support\Str::slug($projectType)]) }}" class="glass-card p-4 card-hover">
-                    <p class="text-xs uppercase tracking-widest text-brand-muted">Type</p>
-                    <p class="font-display text-lg mt-2">{{ $projectType }}</p>
-                    <p class="text-sm text-brand-muted mt-2">{{ $featuredProjects->where('industry', $projectType)->count() }} projects</p>
-                </a>
-            @endforeach
-        </div>
-    @endif
 
-    <div class="grid md:grid-cols-3 gap-5 mt-6">
-        @forelse($featuredProjects as $project)
-            <article class="glass-card p-5 card-hover">
-                @if($project->cover_image_url)
-                    <img
-                        src="{{ $project->cover_image_url }}"
-                        alt="{{ $project->title }} cover image"
-                        class="h-44 w-full object-cover rounded-xl border border-brand-border"
-                        loading="lazy"
-                    >
-                @else
-                    <div class="h-44 w-full rounded-xl border border-brand-border bg-slate-900/40 flex items-center justify-center text-xs uppercase tracking-widest text-brand-muted">
-                        No Cover Image
-                    </div>
-                @endif
-                <p class="text-xs text-brand-muted uppercase tracking-widest mt-4">{{ $project->industry ?: 'General' }}</p>
-                <h3 class="font-display text-xl mt-2">{{ $project->title }}</h3>
-                <p class="text-sm text-brand-muted mt-2">{{ $project->summary }}</p>
-                <a href="{{ route('case-studies.show', $project->slug) }}" class="text-sm mt-4 inline-flex text-brand-accent">Read Story -></a>
-            </article>
-        @empty
-            <p class="text-brand-muted">Publish projects from admin to populate this section.</p>
-        @endforelse
+            @forelse($projectTypes as $projectType)
+                <a href="{{ route('case-studies.index', ['type' => $projectType->slug]) }}" class="glass-card p-4 card-hover w-72 shrink-0">
+                    @if($projectType->cover_image_url)
+                        <img
+                            src="{{ $projectType->cover_image_url }}"
+                            alt="{{ $projectType->name }} type cover image"
+                            class="h-36 w-full object-cover rounded-xl border border-brand-border"
+                            loading="lazy"
+                        >
+                    @else
+                        <div class="h-36 w-full rounded-xl border border-brand-border bg-slate-900/40 flex items-center justify-center text-xs uppercase tracking-widest text-brand-muted">
+                            Project Type
+                        </div>
+                    @endif
+                    <p class="text-xs uppercase tracking-widest text-brand-muted mt-4">Type</p>
+                    <p class="font-display text-lg mt-2">{{ $projectType->name }}</p>
+                    <p class="text-sm text-brand-muted mt-2">{{ $projectType->published_projects_count }} projects</p>
+                </a>
+            @empty
+                <div class="glass-card p-4 w-72 shrink-0">
+                    <p class="text-sm text-brand-muted">Create project types from admin to power this section.</p>
+                </div>
+            @endforelse
+        </div>
     </div>
 
     <div class="mt-6">
