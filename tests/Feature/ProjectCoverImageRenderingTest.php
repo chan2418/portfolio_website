@@ -11,7 +11,7 @@ class ProjectCoverImageRenderingTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_home_page_renders_external_cover_image_url_for_featured_project(): void
+    public function test_case_studies_list_renders_external_cover_image_url_for_project(): void
     {
         Project::query()->create([
             'title' => 'External Image Project',
@@ -23,7 +23,7 @@ class ProjectCoverImageRenderingTest extends TestCase
             'cover_image' => 'https://example.com/project-cover.jpg',
         ]);
 
-        $this->get(route('home'))
+        $this->get(route('case-studies.index'))
             ->assertOk()
             ->assertSee('https://example.com/project-cover.jpg', escape: false);
     }

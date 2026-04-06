@@ -5,12 +5,14 @@ namespace App\Models;
 use App\Enums\PublishStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Project extends Model
 {
     protected $fillable = [
+        'project_type_id',
         'title',
         'slug',
         'client_name',
@@ -52,6 +54,11 @@ class Project extends Model
         return $query->where('status', PublishStatus::Published->value);
     }
 
+    public function projectType(): BelongsTo
+    {
+        return $this->belongsTo(ProjectType::class);
+    }
+
     public function getCoverImageUrlAttribute(): ?string
     {
         $coverImage = (string) ($this->cover_image ?? '');
@@ -69,5 +76,10 @@ class Project extends Model
         }
 
         return Storage::disk('public')->url($coverImage);
+    }
+
+    public function getProjectTypeLabelAttribute(): string
+    {
+        return (string) ($this->projectType?->name ?: $this->industry ?: 'General');
     }
 }

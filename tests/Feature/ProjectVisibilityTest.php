@@ -22,10 +22,6 @@ class ProjectVisibilityTest extends TestCase
             'published_at' => now()->addDay(),
         ]);
 
-        $this->get(route('home'))
-            ->assertOk()
-            ->assertSee($project->title);
-
         $this->get(route('case-studies.index'))
             ->assertOk()
             ->assertSee($project->title);

@@ -5,7 +5,7 @@
     <a href="{{ route('case-studies.index') }}" class="text-sm text-brand-muted"><- Back to projects</a>
 
     <div class="glass-card p-7 mt-4">
-        <p class="eyebrow">{{ $project->industry ?: 'Case Study' }}</p>
+        <p class="eyebrow">{{ $project->project_type_label }}</p>
         <h1 class="section-title mt-2">{{ $project->title }}</h1>
         <p class="text-brand-muted mt-3 max-w-3xl">{{ $project->summary }}</p>
 

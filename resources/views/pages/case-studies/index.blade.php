@@ -18,10 +18,10 @@
             </a>
             @foreach($availableTypes as $type)
                 <a
-                    href="{{ route('case-studies.index', ['type' => \Illuminate\Support\Str::slug($type)]) }}"
-                    class="badge {{ $selectedType === $type ? 'border-brand-accent text-brand-accent' : '' }}"
+                    href="{{ route('case-studies.index', ['type' => $type->slug]) }}"
+                    class="badge {{ optional($selectedType)->id === $type->id ? 'border-brand-accent text-brand-accent' : '' }}"
                 >
-                    {{ $type }}
+                    {{ $type->name }}
                 </a>
             @endforeach
         </div>
@@ -42,7 +42,7 @@
                         No Cover Image
                     </div>
                 @endif
-                <p class="text-xs uppercase tracking-widest text-brand-muted mt-4">{{ $project->industry ?: 'Digital Product' }}</p>
+                <p class="text-xs uppercase tracking-widest text-brand-muted mt-4">{{ $project->project_type_label }}</p>
                 <h2 class="font-display text-xl mt-2">{{ $project->title }}</h2>
                 <p class="text-sm text-brand-muted mt-3">{{ $project->summary }}</p>
                 <div class="mt-4 flex items-center justify-between text-xs text-brand-muted">
