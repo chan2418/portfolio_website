@@ -80,7 +80,6 @@ class ProjectResource extends Resource
                     ->imageResizeUpscale(false)
                     ->imageEditor()
                     ->maxSize(10240)
-                    ->dehydrated(false)
                     ->default(function (?Project $record): ?string {
                         $current = (string) ($record?->cover_image ?? '');
 
@@ -142,7 +141,8 @@ class ProjectResource extends Resource
             ])
             ->defaultSort('published_at', 'desc')
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->mutateFormDataUsing(fn (array $data): array => static::normalizeCoverImageData($data)),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -157,5 +157,26 @@ class ProjectResource extends Resource
         return [
             'index' => Pages\ManageProjects::route('/'),
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    public static function normalizeCoverImageData(array $data): array
+    {
+        $uploadValue = $data['cover_image_upload'] ?? null;
+
+        if (is_array($uploadValue)) {
+            $uploadValue = array_values($uploadValue)[0] ?? null;
+        }
+
+        if (is_string($uploadValue) && filled($uploadValue)) {
+            $data['cover_image'] = $uploadValue;
+        }
+
+        unset($data['cover_image_upload']);
+
+        return $data;
     }
 }
