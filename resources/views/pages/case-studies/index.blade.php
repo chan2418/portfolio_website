@@ -11,7 +11,19 @@
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         @forelse($projects as $project)
             <article class="glass-card p-6 card-hover">
-                <p class="text-xs uppercase tracking-widest text-brand-muted">{{ $project->industry ?: 'Digital Product' }}</p>
+                @if($project->cover_image_url)
+                    <img
+                        src="{{ $project->cover_image_url }}"
+                        alt="{{ $project->title }} cover image"
+                        class="h-44 w-full object-cover rounded-xl border border-brand-border"
+                        loading="lazy"
+                    >
+                @else
+                    <div class="h-44 w-full rounded-xl border border-brand-border bg-slate-900/40 flex items-center justify-center text-xs uppercase tracking-widest text-brand-muted">
+                        No Cover Image
+                    </div>
+                @endif
+                <p class="text-xs uppercase tracking-widest text-brand-muted mt-4">{{ $project->industry ?: 'Digital Product' }}</p>
                 <h2 class="font-display text-xl mt-2">{{ $project->title }}</h2>
                 <p class="text-sm text-brand-muted mt-3">{{ $project->summary }}</p>
                 <div class="mt-4 flex items-center justify-between text-xs text-brand-muted">

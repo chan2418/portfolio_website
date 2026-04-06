@@ -33,7 +33,7 @@ class CaseStudyController extends Controller
         $seo = $seoManager->resolve(SeoPageType::Project->value, $project->slug, [
             'title' => $project->title,
             'description' => $project->summary,
-            'og_image' => $project->cover_image,
+            'og_image' => $project->cover_image_url,
         ]);
 
         return view('pages.case-studies.show', compact('project', 'seo'));
