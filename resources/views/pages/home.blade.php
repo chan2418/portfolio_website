@@ -110,7 +110,19 @@
     <div class="grid md:grid-cols-3 gap-5 mt-6">
         @forelse($featuredProjects as $project)
             <article class="glass-card p-5 card-hover">
-                <p class="text-xs text-brand-muted uppercase tracking-widest">{{ $project->industry ?: 'Digital Product' }}</p>
+                @if($project->cover_image_url)
+                    <img
+                        src="{{ $project->cover_image_url }}"
+                        alt="{{ $project->title }} cover image"
+                        class="h-44 w-full object-cover rounded-xl border border-brand-border"
+                        loading="lazy"
+                    >
+                @else
+                    <div class="h-44 w-full rounded-xl border border-brand-border bg-slate-900/40 flex items-center justify-center text-xs uppercase tracking-widest text-brand-muted">
+                        No Cover Image
+                    </div>
+                @endif
+                <p class="text-xs text-brand-muted uppercase tracking-widest mt-4">{{ $project->industry ?: 'Digital Product' }}</p>
                 <h3 class="font-display text-xl mt-2">{{ $project->title }}</h3>
                 <p class="text-sm text-brand-muted mt-2">{{ $project->summary }}</p>
                 <a href="{{ route('case-studies.show', $project->slug) }}" class="text-sm mt-4 inline-flex text-brand-accent">Read Story -></a>

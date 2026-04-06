@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\PublishStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
@@ -48,5 +50,24 @@ class Project extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', PublishStatus::Published->value);
+    }
+
+    public function getCoverImageUrlAttribute(): ?string
+    {
+        $coverImage = (string) ($this->cover_image ?? '');
+
+        if ($coverImage === '') {
+            return null;
+        }
+
+        if (Str::startsWith($coverImage, ['http://', 'https://'])) {
+            return $coverImage;
+        }
+
+        if (Str::startsWith($coverImage, '/')) {
+            return url($coverImage);
+        }
+
+        return Storage::disk('public')->url($coverImage);
     }
 }

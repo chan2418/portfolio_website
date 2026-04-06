@@ -6,6 +6,7 @@ use App\Enums\PublishStatus;
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Models\Project;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -62,8 +63,30 @@ class ProjectResource extends Resource
                     ->valueLabel('Value')
                     ->addButtonLabel('Add metric'),
                 TextInput::make('cover_image')
-                    ->url()
-                    ->maxLength(2048),
+                    ->label('Cover Image (URL or Uploaded Path)')
+                    ->maxLength(2048)
+                    ->placeholder('https://example.com/image.jpg or projects/covers/image.jpg')
+                    ->helperText('Paste an image URL or upload a file below.'),
+                FileUpload::make('cover_image_upload')
+                    ->label('Upload Cover Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('projects/covers')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->maxSize(4096)
+                    ->dehydrated(false)
+                    ->default(function (?Project $record): ?string {
+                        $current = (string) ($record?->cover_image ?? '');
+
+                        if ($current === '' || Str::startsWith($current, ['http://', 'https://', '/'])) {
+                            return null;
+                        }
+
+                        return $current;
+                    })
+                    ->afterStateUpdated(fn (Set $set, mixed $state): mixed => filled($state) ? $set('cover_image', $state) : null)
+                    ->helperText('Uploaded files are stored in /storage/projects/covers and applied automatically.'),
                 TextInput::make('project_url')
                     ->url()
                     ->maxLength(2048),

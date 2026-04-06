@@ -9,6 +9,15 @@
         <h1 class="section-title mt-2">{{ $project->title }}</h1>
         <p class="text-brand-muted mt-3 max-w-3xl">{{ $project->summary }}</p>
 
+        @if($project->cover_image_url)
+            <img
+                src="{{ $project->cover_image_url }}"
+                alt="{{ $project->title }} cover image"
+                class="w-full h-64 md:h-80 object-cover rounded-2xl border border-brand-border mt-7"
+                loading="lazy"
+            >
+        @endif
+
         <div class="grid md:grid-cols-2 gap-6 mt-8">
             <article>
                 <h2 class="font-display text-xl">Challenge</h2>
