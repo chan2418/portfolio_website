@@ -8,6 +8,25 @@
         <p class="text-brand-muted mt-3 max-w-2xl">Explore the stack, process, and impact behind each build.</p>
     </div>
 
+    @if($availableTypes->isNotEmpty())
+        <div class="flex flex-wrap gap-3 mt-6">
+            <a
+                href="{{ route('case-studies.index') }}"
+                class="badge {{ $selectedType === null ? 'border-brand-accent text-brand-accent' : '' }}"
+            >
+                All
+            </a>
+            @foreach($availableTypes as $type)
+                <a
+                    href="{{ route('case-studies.index', ['type' => \Illuminate\Support\Str::slug($type)]) }}"
+                    class="badge {{ $selectedType === $type ? 'border-brand-accent text-brand-accent' : '' }}"
+                >
+                    {{ $type }}
+                </a>
+            @endforeach
+        </div>
+    @endif
+
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         @forelse($projects as $project)
             <article class="glass-card p-6 card-hover">
