@@ -6,6 +6,8 @@
     $personRole = $siteSettings['brand_role'] ?? 'Personal Brand Portfolio';
     $shortBio = $siteSettings['brand_short_bio'] ?? 'I build practical web products and showcase real execution through projects and content.';
     $profilePhoto = $siteSettings['profile_photo_url'] ?? '';
+    $browseAllCoverImage = $siteSettings['projects_browse_all_cover_image_url'] ?? ($siteSettings['default_og_image'] ?? '');
+    $browseAllDescription = 'Explore every case study, result, and execution detail in one place.';
     $socialLinks = [
         ['label' => 'LinkedIn', 'url' => $siteSettings['social_linkedin_url'] ?? null],
         ['label' => 'GitHub', 'url' => $siteSettings['social_github_url'] ?? null],
@@ -110,8 +112,21 @@
     <div class="mt-6 overflow-x-auto pb-2">
         <div class="flex gap-4 min-w-max pr-2">
             <a href="{{ route('case-studies.index') }}" class="glass-card p-4 card-hover w-72 shrink-0">
-                <p class="text-xs uppercase tracking-widest text-brand-muted">All Projects</p>
+                @if(filled($browseAllCoverImage))
+                    <img
+                        src="{{ $browseAllCoverImage }}"
+                        alt="Browse all projects cover image"
+                        class="h-36 w-full object-cover rounded-xl border border-brand-border"
+                        loading="lazy"
+                    >
+                @else
+                    <div class="h-36 w-full rounded-xl border border-brand-border bg-slate-900/40 flex items-center justify-center text-xs uppercase tracking-widest text-brand-muted">
+                        All Projects
+                    </div>
+                @endif
+                <p class="text-xs uppercase tracking-widest text-brand-muted mt-4">All Projects</p>
                 <p class="font-display text-lg mt-2">Browse everything</p>
+                <p class="text-sm text-brand-muted mt-2">{{ $browseAllDescription }}</p>
                 <p class="text-sm text-brand-muted mt-2">{{ $totalPublishedProjects }} projects</p>
             </a>
 
@@ -131,6 +146,9 @@
                     @endif
                     <p class="text-xs uppercase tracking-widest text-brand-muted mt-4">Type</p>
                     <p class="font-display text-lg mt-2">{{ $projectType->name }}</p>
+                    <p class="text-sm text-brand-muted mt-2">
+                        {{ filled($projectType->description) ? str($projectType->description)->limit(110) : 'Explore projects in this category.' }}
+                    </p>
                     <p class="text-sm text-brand-muted mt-2">{{ $projectType->published_projects_count }} projects</p>
                 </a>
             @empty

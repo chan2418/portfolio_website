@@ -17,6 +17,7 @@ class HomeProjectTypeCardsTest extends TestCase
         $websiteType = ProjectType::query()->create([
             'name' => 'Website',
             'slug' => 'website',
+            'description' => 'Marketing websites and landing pages for lead generation.',
             'order_column' => 1,
             'is_active' => true,
         ]);
@@ -34,6 +35,8 @@ class HomeProjectTypeCardsTest extends TestCase
             ->assertOk()
             ->assertSee('Browse by project type')
             ->assertSee('Browse everything')
+            ->assertSee('Explore every case study, result, and execution detail in one place.')
+            ->assertSee('Marketing websites and landing pages for lead generation.')
             ->assertSee('Website');
     }
 
