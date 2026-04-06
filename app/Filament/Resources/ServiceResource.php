@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ServiceResource\Pages;
 use App\Models\Service;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -54,9 +53,9 @@ class ServiceResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->required(),
-                DateTimePicker::make('published_at'),
                 Toggle::make('is_active')
                     ->label('Published')
+                    ->helperText('Turn this on to show the service on the Home and Services pages.')
                     ->default(true),
             ]);
     }
